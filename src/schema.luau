@@ -36,12 +36,14 @@ local function validateGroup(group: any): (boolean, string?)
         return false, "group.title must be a string"
     end
     if group.rows ~= nil then
+        if type(group.rows) ~= "table" then return false, "group.rows must be a table" end
         for _, r in group.rows do
             local ok, why = validateRow(r)
             if not ok then return false, why end
         end
     end
     if group.groups ~= nil then
+        if type(group.groups) ~= "table" then return false, "group.groups must be a table" end
         for _, g in group.groups do
             local ok, why = validateGroup(g)
             if not ok then return false, why end
