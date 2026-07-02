@@ -98,6 +98,66 @@ local function validateEntries(entries: any): (boolean, string?)
   return true
 end
 
+local function validateTarget(t: any): (boolean, string?)
+  if type(t) ~= "table" then
+    return false, "curve.target must be a table"
+  end
+  if t.kind == "sequence" then
+    if type(t.prop) ~= "string" then
+      return false, "sequence target requires prop: string"
+    end
+  elseif t.kind == "attribute" then
+    if type(t.attr) ~= "string" then
+      return false, "attribute target requires attr: string"
+    end
+  else
+    return false, "curve.target.kind must be 'sequence' or 'attribute'"
+  end
+  return true
+end
+
+local function validateCurveEntry(entry: any): (boolean, string?)
+  if type(entry) ~= "table" then
+    return false, "curve entry is not a table"
+  end
+  if type(entry.name) ~= "string" then
+    return false, "curve entry requires name: string"
+  end
+  local isGroup = entry.entries ~= nil
+  local isLeaf = entry.target ~= nil
+  if isGroup and isLeaf then
+    return false, "curve entry cannot be both group (entries) and leaf (target)"
+  elseif isGroup then
+    if type(entry.entries) ~= "table" or not isArray(entry.entries) then
+      return false, "curve group entries must be an array"
+    end
+    for _, sub in entry.entries do
+      local ok, why = validateCurveEntry(sub)
+      if not ok then
+        return false, why
+      end
+    end
+    return true
+  elseif isLeaf then
+    return validateTarget(entry.target)
+  else
+    return false, "curve entry must be a leaf (target) or group (entries)"
+  end
+end
+
+function Schema.validateCurves(curves: any): (boolean, string?)
+  if type(curves) ~= "table" or not isArray(curves) then
+    return false, "curves must be an array"
+  end
+  for _, entry in curves do
+    local ok, why = validateCurveEntry(entry)
+    if not ok then
+      return false, why
+    end
+  end
+  return true
+end
+
 function Schema.validate(d: any): (boolean, string?)
   if type(d) ~= "table" then
     return false, "descriptor is not a table"
@@ -116,6 +176,12 @@ function Schema.validate(d: any): (boolean, string?)
   end
   if findFunction(d) then
     return false, "descriptor must be data-only (found a function)"
+  end
+  if d.curves ~= nil then
+    local ok, why = Schema.validateCurves(d.curves)
+    if not ok then
+      return false, why
+    end
   end
   return validateEntries(d.entries)
 end
