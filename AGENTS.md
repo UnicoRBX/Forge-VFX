@@ -4,7 +4,9 @@ Instructions for coding agents working in `pkg/forge-vfx`, the emit module behin
 
 Follow this whether you are changing code here directly or preparing a PR. Code that does not match the style below will be sent back.
 
-**Before writing any Luau, load the `forge-luau-style` skill** (`.claude/skills/forge-luau-style/`). It is the canonical rule set: `SKILL.md` for the rules and procedure, `reference.md` for the full evidence and worked corrections. This file is the summary; the skill is the authority.
+**Before writing any Luau, read `.agents/skills/forge-luau-style/`.** It is the canonical rule set: `SKILL.md` for the rules and procedure, `reference.md` for the full evidence and worked corrections. This file is the summary; that directory is the authority. Both describe this package only. The parent plugin repo has its own conventions and its own guide, and nothing here is a rule for it.
+
+`.agents/` is deliberately tool-agnostic. If your assistant discovers skills from its own directory, symlink to it rather than copying, e.g. `mkdir -p .claude/skills && ln -s ../../.agents/skills/forge-luau-style .claude/skills/forge-luau-style`. Tool-specific directories are gitignored, so a copy will drift and nobody will see it.
 
 ## Layout
 
@@ -69,7 +71,9 @@ Two more are vendored MIT code by Daniel P H Fox and were never house style:
 - `src/mod/color/Oklab.luau`
 - `src/mod/color/sRGB.luau`
 
-Those five are the only files in the package with `--!strict`. That is a symptom, not a convention.
+Those five are the only files in `src/` with `--!strict`. That is a symptom, not a convention.
+
+**Everything under `pkg/` is third-party** (`Z`, `tiniest`, `Promise.luau`, `Shake.luau`), some vendored and some a submodule. It is not house style, it is not precedent, and it is not yours to reformat. Never run stylua over `pkg/`, never cite it, and keep local changes out of it so upstream updates stay clean.
 
 **Imitate these instead:** `src/mod/recolor.luau`, `src/effects/shockwave_ring.luau`, `src/obj/ObjectCache.luau`, `src/types.luau`.
 

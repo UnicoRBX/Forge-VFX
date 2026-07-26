@@ -24,7 +24,9 @@ House Luau style for `pkg/forge-vfx`. It is derived from the code, not from pros
 - `src/mod/color/Oklab.luau`
 - `src/mod/color/sRGB.luau`
 
-These five are the only files in the package with `--!strict`. That is a symptom, not a convention.
+These five are the only files in `src/` with `--!strict`. That is a symptom, not a convention.
+
+**`pkg/` is third-party in its entirety** (`Z`, `tiniest`, `Promise.luau`, `Shake.luau`). Read it to understand an API you are calling; never cite it as precedent, never reformat it, and keep stylua off it.
 
 **Read these instead.** They are canonical: `src/mod/recolor.luau`, `src/effects/shockwave_ring.luau`, `src/effects/spin.luau`, `src/obj/ObjectCache.luau`, `src/types.luau`, `src/mod/tween.luau`.
 

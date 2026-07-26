@@ -10,6 +10,8 @@ Evidence-backed rule set for `pkg/forge-vfx`. Every count below was measured acr
 
 **Vendored, MIT, by Daniel P H Fox (not house style):** `src/mod/color/Oklab.luau`, `src/mod/color/sRGB.luau`. `Oklab.luau` lines 1 to 23 are a verbatim license block.
 
+**Third-party in its entirety (never precedent, never reformatted):** everything under `pkg/`.
+
 **Treat with care (recently modified):** `src/mod/utility.luau`, `src/mod/lerp.luau`, `src/init.luau`.
 
 ## 1. Length sorting
