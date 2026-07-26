@@ -24,7 +24,7 @@ House Luau style for `pkg/forge-vfx`. It is derived from the code, not from pros
 - `src/mod/color/Oklab.luau`
 - `src/mod/color/sRGB.luau`
 
-These five are the only files in `src/` with `--!strict`. That is a symptom, not a convention.
+Those two vendored files are the only ones left carrying `--!strict`, and only because editing vendored code to match house style would fork it from upstream for nothing. Everything else in `src/` and `tests/` has no mode comment at all. The three drifted files above did carry one, which is what marked them as drifted; adding another is the exact mistake this section exists to stop.
 
 **`pkg/` is third-party in its entirety** (`Z`, `tiniest`, `Promise.luau`, `Shake.luau`). Read it to understand an API you are calling; never cite it as precedent, never reformat it, and keep stylua off it.
 

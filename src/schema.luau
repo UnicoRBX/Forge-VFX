@@ -1,4 +1,3 @@
---!strict
 -- Open, versioned schema standard for property/attribute rows. Data-only so it
 -- round-trips across the plugin<->runtime boundary and can be authored by custom
 -- effects. Unknown fields are preserved (validation never mutates the descriptor).

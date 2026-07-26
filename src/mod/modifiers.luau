@@ -1,4 +1,3 @@
---!strict
 -- Runtime evaluator for a per-target modifier queue. A modifier is
 -- lerp(start, finish, alpha); tween alpha = curve(progress), randomizer
 -- alpha = weighted random via `rng`. `chain` feeds the previous modifier's

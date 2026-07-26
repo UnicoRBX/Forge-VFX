@@ -1,4 +1,3 @@
---!strict
 -- Pure Path2D control-point (de)serialization + curve sampling. No engine
 -- access (no `game`/`script`) so this is requirable under lune as well as in
 -- Studio -- unlike `@mod/utility`, which does top-level `game:GetService`.

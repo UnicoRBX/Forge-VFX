@@ -1,4 +1,3 @@
---!strict
 -- modifiers and path are pure, with no game or script access, so they are
 -- required directly
 local modifiers = require("@mod/modifiers")

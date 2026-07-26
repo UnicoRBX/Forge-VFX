@@ -1,4 +1,3 @@
---!strict
 local Schema = require("@root/schema")
 local harness = require("@tests/harness")
 local describe, test, expect = harness.describe, harness.test, harness.expect

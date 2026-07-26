@@ -71,7 +71,7 @@ Two more are vendored MIT code by Daniel P H Fox and were never house style:
 - `src/mod/color/Oklab.luau`
 - `src/mod/color/sRGB.luau`
 
-Those five are the only files in `src/` with `--!strict`. That is a symptom, not a convention.
+Those two vendored files are the only ones left carrying `--!strict`, and only because editing vendored code to match house style would fork it from upstream for nothing. Everything else in `src/` and `tests/` has no mode comment at all.
 
 **Everything under `pkg/` is third-party** (`Z`, `tiniest`, `Promise.luau`, `Shake.luau`), some vendored and some a submodule. It is not house style, it is not precedent, and it is not yours to reformat. Never run stylua over `pkg/`, never cite it, and keep local changes out of it so upstream updates stay clean.
 
