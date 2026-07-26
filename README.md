@@ -30,6 +30,8 @@ npm i @zilibobi/forge-vfx
 
 Check the [releases page](https://github.com/zilibobi/forge-vfx/releases/latest) for prebuilt .rbxm files.
 
+The model is named `forge-vfx`, matching the package name so package managers resolve it. A hyphen cannot be indexed with a dot, so either rename it after inserting or write `ReplicatedStorage["forge-vfx"]`. The Wally and npm paths are unaffected: both expose it under the name you import it as.
+
 ## Usage
 
 The module needs to be initialized before emitting any effects.
