@@ -1,0 +1,6 @@
+[submodule "pkg/Z"]
+	path = pkg/Z
+	url = https://github.com/kohltastrophe/Z.git
+[submodule "pkg/tiniest"]
+	path = pkg/tiniest
+	url = https://github.com/dphfox/tiniest.git

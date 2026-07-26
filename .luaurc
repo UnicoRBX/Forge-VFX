@@ -5,6 +5,9 @@
     "obj": "./src/obj",
     "vfx": "./src/effects",
     "srv": "./src/services",
-    "root": "./src"
+    "root": "./src",
+    "z": "./pkg/Z/src",
+    "tiniest": "./pkg/tiniest",
+    "tests": "./tests"
   }
 }

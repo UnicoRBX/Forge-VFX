@@ -1,0 +1,27 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+# selene is in rokit.toml and selene.toml is configured, but it is not a gate
+# yet: with the generated Roblox std it reports 10 errors, and all of them are
+# standard-library modelling gaps rather than defects (vector.create accepts 2
+# arguments in real Luau, CFrame.identity is not modelled as a CFrame). Two
+# if_same_then_else warnings in src/init.luau and src/mod/utility.luau predate
+# this workflow and want a human decision before anything gates on them.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: CompeyDev/setup-rokit@v0.1.2
+
+      - name: lune
+        run: lune run tests/run
+
+      - name: stylua
+        run: stylua --check src tests

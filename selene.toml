@@ -1,0 +1,5 @@
+std = "roblox+luau"
+
+[lints]
+shadowing = "allow"
+mixed_table = "allow"
