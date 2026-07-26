@@ -1,4 +1,4 @@
-local codec = require("../mod/modifier_codec")
+local codec = require("@mod/modifier_codec")
 
 local function assertEqual(actual: unknown, expected: unknown, label: string)
   assert(actual == expected, `{label}: expected {tostring(expected)}, got {tostring(actual)}`)

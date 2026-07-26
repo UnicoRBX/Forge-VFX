@@ -1,11 +1,10 @@
--- entry point for the open cloud engine lane, uploaded as the task script
+-- entry point for the open cloud engine lane
 --
--- deliberately outside the synced tree: test.project.json maps src, pkg and
--- tests/roblox only, so this file reaches the engine as the task body rather
--- than as a module inside the place.
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local run = require(ReplicatedStorage.ForgeVFXTest.tests.run)
+-- darklua bundles this and everything it requires into one self contained file,
+-- which is the whole task body. the create task api takes a single script
+-- string and has no field for extra modules, so bundling is what lets the specs
+-- reach the engine at all without uploading a place first.
+local run = require("@tests/roblox/run")
 
 local passed, failed, report = run()
 

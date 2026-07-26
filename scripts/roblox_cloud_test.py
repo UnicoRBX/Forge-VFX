@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Run the engine test lane on real Roblox servers via Open Cloud.
 
-Uploads the built place as a *saved* (never published) version, runs
-scripts/cloud_entry.luau against that version as a Luau execution session task,
+Bundles scripts/cloud_entry.luau and everything it requires into one file with
+darklua, runs that as a Luau execution session task against the test place,
 prints the task's logs, and exits non-zero unless the task completed.
 
-Usage:  python3 scripts/roblox_cloud_test.py [place.rbxl] [entry.luau]
+Bundling is what keeps this to a single API and a single scope. The create-task
+body carries one `script` string with no field for extra modules, so the only
+alternatives are a self-contained script or uploading a place for the task to
+require out of, and the latter needs place-write on the key as well.
+
+Usage:  python3 scripts/roblox_cloud_test.py
 
 Credentials come from ROBLOX_API_KEY, ROBLOX_UNIVERSE_ID and ROBLOX_PLACE_ID,
 read from the environment or from a local .env, which is gitignored.
@@ -13,6 +18,7 @@ read from the environment or from a local .env, which is gitignored.
 
 import json
 import os
+import subprocess
 import sys
 import time
 import urllib.error
@@ -21,8 +27,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-DEFAULT_PLACE = ROOT / ".build" / "test.rbxl"
-DEFAULT_ENTRY = ROOT / "scripts" / "cloud_entry.luau"
+ENTRY = ROOT / "scripts" / "cloud_entry.luau"
+CONFIG = ROOT / "scripts" / "bundle.darklua.json"
+BUNDLE = ROOT / ".build" / "tests.luau"
+
+# the api rejects a script over 4 MB; the bundle is two orders under that, so a
+# breach means something pulled in a tree it should not have
+MAX_SCRIPT_BYTES = 4 * 1024 * 1024
 
 POLL_SECONDS = 3
 POLL_TIMEOUT_SECONDS = 600
@@ -53,6 +64,25 @@ def require_env(name):
     return value
 
 
+def bundle():
+    BUNDLE.parent.mkdir(parents=True, exist_ok=True)
+
+    result = subprocess.run(
+        ["darklua", "process", "--config", str(CONFIG), str(ENTRY), str(BUNDLE)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        sys.exit(f"darklua failed:\n{result.stdout}{result.stderr}")
+
+    source = BUNDLE.read_text(encoding="utf8")
+    if len(source.encode("utf8")) > MAX_SCRIPT_BYTES:
+        sys.exit(f"{BUNDLE} exceeds the {MAX_SCRIPT_BYTES} byte script limit")
+
+    return source
+
+
 def request(url, headers, body=None, method=None, retries=3):
     if method is None:
         method = "GET" if body is None else "POST"
@@ -76,29 +106,10 @@ def request(url, headers, body=None, method=None, retries=3):
         time.sleep(1)
 
 
-def upload_place(api_key, universe, place, place_file):
-    """Save a new place version and return its version number.
-
-    versionType=Saved, not Published: the engine lane must never change what a
-    player would load, and a task can target a saved version directly.
-    """
-    url = (
-        f"https://apis.roblox.com/universes/v1/{universe}"
-        f"/places/{place}/versions?versionType=Saved"
-    )
-    headers = {
-        "x-api-key": api_key,
-        "Content-Type": "application/octet-stream",
-    }
-
-    result = request(url, headers, body=place_file.read_bytes())
-    return result["versionNumber"]
-
-
-def create_task(api_key, universe, place, version, source):
+def create_task(api_key, universe, place, source):
     url = (
         f"https://apis.roblox.com/cloud/v2/universes/{universe}"
-        f"/places/{place}/versions/{version}/luau-execution-session-tasks"
+        f"/places/{place}/luau-execution-session-tasks"
     )
     headers = {"x-api-key": api_key, "Content-Type": "application/json"}
 
@@ -141,20 +152,10 @@ def main():
     universe = require_env("ROBLOX_UNIVERSE_ID")
     place = require_env("ROBLOX_PLACE_ID")
 
-    place_file = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PLACE
-    entry_file = Path(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_ENTRY
+    source = bundle()
+    print(f"bundled {len(source)} chars, running on place {place}")
 
-    if not place_file.exists():
-        sys.exit(f"{place_file} does not exist; run scripts/build-test-place.sh")
-
-    print(f"uploading {place_file.name} ({place_file.stat().st_size} bytes)")
-    version = upload_place(api_key, universe, place, place_file)
-
-    print(f"running {entry_file.name} against place version {version}")
-    task = create_task(
-        api_key, universe, place, version, entry_file.read_text(encoding="utf8")
-    )
-
+    task = create_task(api_key, universe, place, source)
     task = poll_task(api_key, task["path"])
     print_logs(api_key, task["path"])
 

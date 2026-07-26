@@ -47,11 +47,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: build place
-        run: ./scripts/build-test-place.sh
-
-      # each run saves its own place version and targets it by number, so
-      # concurrent runs cannot read each other's upload
+      # the runner bundles with darklua and posts the result as the task body,
+      # so concurrent runs share nothing but the place they execute against
       - name: engine tests
         env:
           ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}

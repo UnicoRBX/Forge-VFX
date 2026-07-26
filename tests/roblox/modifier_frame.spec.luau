@@ -1,4 +1,4 @@
-local frame = require("../mod/modifier_frame")
+local frame = require("@mod/modifier_frame")
 
 local function assertEqual(actual: unknown, expected: unknown, label: string)
   assert(actual == expected, `{label}: expected {tostring(expected)}, got {tostring(actual)}`)
