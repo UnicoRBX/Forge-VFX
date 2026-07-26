@@ -1,16 +1,9 @@
 {
   "name": "ForgeVFXTest",
   "tree": {
-    "$className": "DataModel",
+    "$path": "src",
 
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-
-      "ForgeVFX": {
-        "$path": "src",
-        "pkg": { "$path": "pkg" },
-        "tests": { "$path": "tests/roblox" }
-      }
-    }
+    "pkg": { "$path": "pkg" },
+    "tests": { "$path": "tests/roblox" }
   }
 }
