@@ -3,6 +3,9 @@ sourcemap.json
 .dist
 .build
 
+# ignore .claude in favor of .agents
+.claude
+
 *.rbxm
 *.log
 
