@@ -121,10 +121,10 @@ harness.suite(function()
     end)
 
     -- Z stores a Color3 as three bytes via Color3.fromRGB, so an endpoint colour
-    -- lands on the nearest 8-bit-per-channel colour. Pinned deliberately: it is
+    -- lands on the nearest 8-bit-per-channel colour. pinned deliberately: it is
     -- the sRGB output resolution and quantizing is idempotent (a second round
     -- trip does not drift further), but it IS lossier than the engine's own
-    -- float Color3, so a change here should be a decision and not a surprise.
+    -- float Color3, so a change here should be a decision and not a surprise
     test("quantizes an endpoint colour to 8 bits per channel", function()
       local Color3 = harness.datatypes.Color3
       local back = roundTrip(Color3.new(0.25, 0.5, 0.75))

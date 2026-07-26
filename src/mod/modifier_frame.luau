@@ -13,7 +13,7 @@ local RAW = 0
 local ZSTD = 1
 
 -- zstd's top level; 0.008ms on a real queue against 0.003ms at level 3, for
--- ~4% fewer characters. Matches model_serializer and the theme export.
+-- ~4% fewer characters, matching model_serializer and the theme export
 local LEVEL = 22
 
 type Base64 = {
@@ -54,6 +54,7 @@ local function codec(): Base64
       end,
     }
   end
+
   return _base64 :: Base64
 end
 
@@ -73,16 +74,19 @@ local function packer(): Compression
         if service:GetDecompressedBufferSize(buf, algorithm) == nil then
           return nil
         end
+
         return service:DecompressBuffer(buf, algorithm)
       end,
     }
   end
+
   return _compression :: Compression
 end
 
--- Whether this attribute value is one of ours at all, as opposed to a legacy
--- value or something a user set by hand. Distinguishes "framed but unreadable"
--- (corruption, worth warning about) from "not a modifier queue" (fall through).
+-- whether this attribute value is one of ours at all, as opposed to a legacy
+-- value or something a user set by hand, which distinguishes "framed but
+-- unreadable" (corruption, worth warning about) from "not a modifier queue"
+-- (fall through)
 function modifier_frame.isFramed(raw: unknown): boolean
   if typeof(raw) ~= "string" then
     return false

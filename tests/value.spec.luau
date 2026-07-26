@@ -1,4 +1,3 @@
---!strict
 local value = require("@mod/value")
 local harness = require("@tests/harness")
 local test, expect = harness.test, harness.expect

@@ -55,40 +55,47 @@ local function deepEqual(a: any, b: any): boolean
   if a == b then
     return true
   end
+
   if typeof(a) ~= "table" or typeof(b) ~= "table" then
     -- buffers: compare byte content
     if typeof(a) == "buffer" and typeof(b) == "buffer" then
       return buffer.tostring(a) == buffer.tostring(b)
     end
+
     return false
   end
+
   for k, v in a do
     if not deepEqual(v, (b :: any)[k]) then
       return false
     end
   end
+
   for k in b do
     if (a :: any)[k] == nil then
       return false
     end
   end
+
   return true
 end
 
 local harness = {}
--- Roblox datatype constructors (Vector2, Vector3, CFrame, NumberSequence, ...)
+
+-- roblox datatype constructors (Vector2, Vector3, CFrame, NumberSequence, ...)
 -- for specs to destructure explicitly, e.g.
--- `local NumberSequence = harness.datatypes.NumberSequence`.
+-- `local NumberSequence = harness.datatypes.NumberSequence`
+--
 -- Instance is here but deliberately not a bare global: Instance.new is a
 -- side-effecting constructor, and vendored code under test has dead
 -- Instance.new branches that must not become reachable
 harness.datatypes = datatypes
 
--- Stand-in for EncodingService's zstd, for specs that exercise modifier_frame's
--- compressed encoding. A toy run-length coder: like zstd it shrinks repetitive
+-- stand-in for EncodingService's zstd, for specs that exercise modifier_frame's
+-- compressed encoding. a toy run-length coder: like zstd it shrinks repetitive
 -- input (a real modifier queue is largely zero runs) and grows short
 -- unrepetitive input, so both branches of frame's pick-the-smaller are
--- reachable headlessly. Not a compressor anyone should reuse.
+-- reachable headlessly. not a compressor anyone should reuse
 harness.fakeCompression = {
   compress = function(buf: buffer): buffer
     local runs = {}
@@ -154,7 +161,6 @@ function harness.expect(actual: any)
   }
 end
 
--- Register a spec's suite for the runner.
 function harness.suite(fn: () -> ())
   table.insert(collected, fn)
 end

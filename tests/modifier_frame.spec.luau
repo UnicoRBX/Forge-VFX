@@ -1,25 +1,28 @@
---!strict
 local frame = require("@mod/modifier_frame")
 local harness = require("@tests/harness")
 local test, expect = harness.test, harness.expect
 
--- Stand-in for EncodingService's base64: hex is enough to prove the framing
--- round-trips without reimplementing base64 in a test.
+-- stand-in for EncodingService's base64: hex is enough to prove the framing
+-- round-trips without reimplementing base64 in a test
 local hex = {
   encode = function(buf: buffer): buffer
     local out = {}
+
     for i = 0, buffer.len(buf) - 1 do
       table.insert(out, string.format("%02x", buffer.readu8(buf, i)))
     end
+
     return buffer.fromstring(table.concat(out))
   end,
 
   decode = function(buf: buffer): buffer
     local s = buffer.tostring(buf)
     local out = buffer.create(#s // 2)
+
     for i = 1, #s, 2 do
       buffer.writeu8(out, (i - 1) // 2, tonumber(string.sub(s, i, i + 1), 16) :: number)
     end
+
     return out
   end,
 }

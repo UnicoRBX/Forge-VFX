@@ -4,8 +4,8 @@ local codec = {}
 
 local VERSION = 1
 
--- Fields the schema names explicitly. Anything else on a modifier goes to
--- `extra`, so a field written by a newer plugin survives a round trip here.
+-- fields the schema names explicitly; anything else on a modifier goes to
+-- `extra`, so a field written by a newer plugin survives a round trip here
 local KNOWN = {
   kind = true,
   chain = true,
@@ -105,6 +105,7 @@ function codec.encode(queue: Queue): buffer
         if type(k) ~= "string" then
           error(`modifier codec cannot encode a modifier with a {type(k)} key`, 2)
         end
+
         extra = extra or {}
         (extra :: any)[k] = v
       end
@@ -142,10 +143,10 @@ function codec.decode(buf: buffer): Queue
   local Z, s = schema()
 
   -- Z's safe mode swallows the read error and hands back nil, so absence of a
-  -- table IS one failure signal. It is not sufficient on its own: a payload
+  -- table IS one failure signal. it is not sufficient on its own: a payload
   -- truncated at a field boundary still decodes, just short. Z.migrate shows the
   -- intended check, which is that the reader consumed exactly the whole buffer,
-  -- and that also rejects trailing garbage.
+  -- and that also rejects trailing garbage
   local data, pos = Z.des(s, buf, 0, true)
 
   if type(data) ~= "table" or type(data.v) ~= "number" or type(data.queue) ~= "table" then

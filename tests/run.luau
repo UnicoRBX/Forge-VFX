@@ -1,4 +1,3 @@
---!strict
 local process = require("@lune/process")
 local harness = require("@tests/harness")
 

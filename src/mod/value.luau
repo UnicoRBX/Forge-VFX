@@ -13,12 +13,12 @@ function value.isLit(x: Value): boolean
   return x.t == "lit"
 end
 
--- Resolve to a concrete runtime value. Variables are unresolved in Spec 1 (nil),
--- so callers fall back to their own default.
+-- a var resolves to nil in spec 1, so callers fall back to their own default
 function value.resolve(x: Value): any
   if x.t == "lit" then
     return (x :: any).v
   end
+
   return nil
 end
 
