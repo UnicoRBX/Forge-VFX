@@ -45,6 +45,14 @@ jobs:
       - name: Convert aliases to directory
         run: rojo-build-noalias --convert-to ./.build
 
+      # the conversion relocates pkg to src/pkg and rewrites the entry to match,
+      # but the root "$path": "src" already mounts it, so the explicit block
+      # mounts it a second time and the artifact ships two pkg folders. the real
+      # fix belongs in rojo-build-noalias, which should not emit a child entry
+      # for a path it just moved under the root
+      - name: Drop the pkg mount the conversion made redundant
+        run: python3 .github/scripts/dedupe-pkg-mount.py ./.build/default.project.json
+
       - name: Build project
         run: |
           CURRENT_TAG="${GITHUB_REF#refs/tags/}"
