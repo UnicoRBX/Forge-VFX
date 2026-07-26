@@ -19,3 +19,6 @@ bun.lock
 
 # open cloud credentials for the engine test lane
 .env
+
+# superpowers workspaces: brainstorm sessions and plan ledgers, all local scratch
+.superpowers/
