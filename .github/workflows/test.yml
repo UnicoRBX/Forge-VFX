@@ -30,10 +30,8 @@ jobs:
   # anything where lune only emulates the engine.
   #
   # github hands a fork pull request no secrets, so this job skips rather than
-  # fails to authenticate, and fork code never runs the engine lane. covering
-  # forks needs a separate workflow_run workflow behind an environment gate,
-  # because workflow_run is the only trigger that runs in the base repository's
-  # context. that does not exist yet.
+  # fails to authenticate. test-fork.yml picks those up through workflow_run,
+  # behind a required reviewer on the roblox-cloud environment.
   roblox:
     runs-on: ubuntu-latest
     needs: test
