@@ -1,12 +1,11 @@
 local roblox = require("@lune/roblox") :: any
-local fs = require("@lune/fs")
-local luau = require("@lune/luau")
 
 -- assigned bare rather than into a table, because lune propagates bare globals
--- into plainly required chunks and into luau.load chunks. that is what lets
--- modules under test and the vendored Z see Color3 with no environment plumbing
--- this project's selene std is roblox-based, so selene treats these names as
--- read-only standard library globals; both lints are the cost of that choice
+-- into plainly required chunks. that is what lets modules under test and the
+-- vendored Z see Color3 with no environment plumbing
+-- this project's roblox.yml std (the stock generated Roblox library) is
+-- roblox-based, so selene treats these names as read-only standard library
+-- globals; both lints are the cost of that choice
 -- selene: allow(unscoped_variables, incorrect_standard_library_use)
 do
   CFrame = roblox.CFrame
@@ -41,33 +40,6 @@ local datatypes: { [string]: any } = {
   ColorSequenceKeypoint = roblox.ColorSequenceKeypoint,
   NumberSequenceKeypoint = roblox.NumberSequenceKeypoint,
 }
-
--- specs that require a descriptor by computed path cannot use lune's `require`,
--- which needs a literal. this loads one file and nothing else: there is no
--- script tree to walk any more, and injectGlobals means the chunk sees the bare
--- datatype globals assigned above
-local moduleCache: { [string]: any } = {}
-
-local function requireModule(path: string): any
-  local file = if fs.isFile(`{path}.luau`)
-    then `{path}.luau`
-    elseif fs.isFile(`{path}/init.luau`) then `{path}/init.luau`
-    else nil
-
-  if not file then
-    error(`no module at "{path}"`, 2)
-  end
-
-  if moduleCache[file] == nil then
-    local chunk = luau.load(luau.compile(fs.readFile(file)), {
-      injectGlobals = true,
-      debugName = file,
-    })
-    moduleCache[file] = chunk()
-  end
-
-  return moduleCache[file]
-end
 
 --------------------------------------------------------------------------------
 -- tiniest pin
@@ -104,8 +76,6 @@ local function deepEqual(a: any, b: any): boolean
 end
 
 local harness = {}
-harness.deepEqual = deepEqual
-harness.requireModule = requireModule
 -- Roblox datatype constructors (Vector2, Vector3, CFrame, NumberSequence, ...)
 -- for specs to destructure explicitly, e.g.
 -- `local NumberSequence = harness.datatypes.NumberSequence`.

@@ -1,6 +1,6 @@
---!strict
--- A modifier "Value" is a tagged union so future dynamic variables slot in with
--- no format change. Only `lit` is produced in Spec 1; `var` is round-tripped.
+-- a modifier value is a tagged union so a future dynamic variable slots in
+-- with no format change; only lit is produced in spec 1, var round-trips
+-- already
 export type Value = { t: "lit", v: any } | { t: "var", ref: string }
 
 local value = {}

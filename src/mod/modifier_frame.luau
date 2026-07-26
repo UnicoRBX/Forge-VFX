@@ -1,24 +1,14 @@
---!strict
--- Attribute framing for an encoded modifier queue: `"v1:" .. base64(body)`,
--- matching model_serializer's convention (attributes hold strings, not buffers).
---
--- `body` is one leading byte saying how the rest is stored (0 raw, 1 zstd)
--- followed by the payload. The flag is not a version: BOTH forms are current and
--- the writer picks per payload, because zstd roughly halves a real authored
--- curve but its frame header costs more than it saves on a short queue, so an
--- empty tombstone would GROW. Picking the smaller of the two is what makes
--- compression free rather than a trade. A genuine format change bumps the
--- prefix instead.
---
--- The base64 and compression codecs are injected rather than required:
--- EncodingService is reached through `game:GetService`, which does not exist
--- under lune, so resolving it at module scope would make every consumer of this
--- module untestable headlessly. Real Studio callers never call `configure` and
--- get the lazy EncodingService defaults on first use.
 local modifier_frame = {}
 
+-- frames an encoded modifier queue as "v1:" .. base64(body), matching
+-- model_serializer's convention that attributes hold strings, not buffers
 modifier_frame.PREFIX = "v1:"
 
+-- the flag is not a version: both forms are current and the writer picks per
+-- payload, because zstd roughly halves a real authored curve but its frame
+-- header costs more than it saves on a short queue, so an empty tombstone
+-- would grow. picking the smaller of the two is what makes compression free
+-- rather than a trade. a genuine format change bumps the prefix instead
 local RAW = 0
 local ZSTD = 1
 
@@ -41,6 +31,11 @@ type Compression = {
 local _base64: Base64? = nil
 local _compression: Compression? = nil
 
+-- injected rather than required at module scope: EncodingService is reached
+-- through game:GetService, which does not exist under lune, so resolving it
+-- eagerly would make every consumer of this module untestable headlessly.
+-- real Studio callers never call configure and get the lazy EncodingService
+-- defaults on first use
 function modifier_frame.configure(base64: Base64, compression: Compression?)
   _base64 = base64
   _compression = compression

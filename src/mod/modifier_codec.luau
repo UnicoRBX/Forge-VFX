@@ -1,24 +1,3 @@
--- Encodes/decodes a modifier queue with Z (pkg/Z, MIT), a schema-based binary
--- serializer.
---
--- A schema writes no field names at all, which is where most of the payload
--- would otherwise go. The two places a queue is genuinely polymorphic ride Z.table's
--- self-describing mode instead, because that is where the type really does vary:
---   * `start` / `finish` hold a tagged Value whose `v` is whatever the row's
---     property type is (number, Color3, UDim2, NumberRange, ...);
---   * `extra` carries any field this version of the plugin does not know about,
---     which is what keeps modifier_queue.merge's union-of-keys behaviour honest
---     across plugin versions rather than silently dropping a newer field.
---
--- Buffer and string widths are deliberate: Z exposes the length-prefix size as
--- part of the type (buffer8/16/32, str8/16/32), so `curve` tops out at 65535
--- bytes rather than at some accidental limit. A curve is 24 bytes per control
--- point, so that is thousands of points.
---
--- Z is injected rather than required at module scope: under lune it must be
--- hosted through the harness's Rojo loader so the Roblox datatype globals it
--- registers are in scope (without them Z.table cannot encode a Color3). Real
--- Studio callers never call `configure`.
 local value = require("./value")
 
 local codec = {}
@@ -55,22 +34,37 @@ export type Queue = { v: number, queue: { Modifier } }
 local _z: any = nil
 local _schema: any = nil
 
+-- injected rather than resolved eagerly so a future runtime decoder can supply
+-- a different Z; real Studio callers and lune specs both just require("@z")
+-- directly, since the roblox datatype globals Z.table needs are already in
+-- scope by the time this runs
 function codec.configure(z: any)
   _z = z
   _schema = nil
 end
 
+-- the fixed part of a modifier is a schema, so it writes no field names at all,
+-- which is where most of the payload used to go
 local function schema(): (any, any)
   if _schema == nil then
     local Z = _z or require("@z") :: any
     _z = Z
 
+    -- start/finish and extra ride Z.table's self-describing mode because their
+    -- type genuinely varies: start/finish hold a tagged value.Value whose `v`
+    -- is whatever the row's property type is (number, Color3, UDim2,
+    -- NumberRange, ...), and extra carries any field this version of the
+    -- plugin does not know about, which is what keeps modifier_queue.merge's
+    -- union-of-keys behaviour honest across plugin versions
     local modifier = Z.schema({
       kind = Z.str8,
       chain = Z.bool,
       duration = Z.some(Z.f64),
       start = Z.some(Z.table),
       finish = Z.some(Z.table),
+      -- buffer16 tops curve out at 65535 bytes rather than an accidental
+      -- limit; a curve is 24 bytes per control point, so that is thousands of
+      -- points
       curve = Z.some(Z.buffer16),
       weight = Z.some(Z.buffer16),
       envelope = Z.some(Z.buffer16),

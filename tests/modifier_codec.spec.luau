@@ -1,13 +1,8 @@
---!strict
 local codec = require("@mod/modifier_codec")
 local harness = require("@tests/harness")
 local test, expect = harness.test, harness.expect
 local Color3, NumberSequence = harness.datatypes.Color3, harness.datatypes.NumberSequence
 local Instance = harness.datatypes.Instance
-
--- Z reads its roblox datatype handlers from globals, which the harness assigns
--- bare, so a plain require registers them
-codec.configure(require("@z"))
 
 local function curve(): buffer
   return buffer.fromstring("CURVEBYTES")
