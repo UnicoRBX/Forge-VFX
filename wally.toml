@@ -13,4 +13,6 @@ repository = "https://github.com/zilibobi/forge-vfx"
 
 realm = "shared"
 
+exclude = ["tests/**", "test.project.json"]
+
 [dependencies]
