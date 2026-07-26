@@ -32,6 +32,14 @@ rokit install --no-trust-check
 
 If `stylua` reports `No such file or directory`, you skipped this step: `rokit.toml` pins StyLua 2.4.0 while the parent plugin repo pins 2.5.2, so the shim will not resolve until the pinned build is fetched. Never work around it by calling a binary out of `~/.rokit/tool-storage/`; that silently formats with the wrong version.
 
+`selene.toml` sets `std = "roblox+luau"`, which needs a generated `roblox.yml`. It is 730 KB of generated API surface, so it is gitignored rather than committed:
+
+```sh
+selene generate-roblox-std
+```
+
+Run that once after cloning. Without it `selene` cannot resolve the standard library. CI does not need it, because selene is not a gate there yet.
+
 ## Always run stylua
 
 ```sh

@@ -22,3 +22,6 @@ bun.lock
 
 # superpowers workspaces: brainstorm sessions and plan ledgers, all local scratch
 .superpowers/
+
+# generated selene std, 730 KB; regenerate with `selene generate-roblox-std`
+roblox.yml
