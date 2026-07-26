@@ -13,3 +13,6 @@ __pycache__
 *.tsbuildinfo
 
 bun.lock
+
+# open cloud credentials for the engine test lane
+.env
