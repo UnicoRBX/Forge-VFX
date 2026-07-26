@@ -1,7 +1,6 @@
 --!strict
--- Runtime modifier-queue evaluator (Task 7). `modifiers`/`path` are pure
--- (no `game`/`script` access), so they're required directly here, with no
--- `requireRojoModule` needed.
+-- modifiers and path are pure, with no game or script access, so they are
+-- required directly
 local modifiers = require("@mod/modifiers")
 local path = require("@mod/common/path")
 local harness = require("@tests/harness")
