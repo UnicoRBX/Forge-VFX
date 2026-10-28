@@ -2,6 +2,7 @@
 local RunService = game:GetService("RunService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -61,7 +62,7 @@ function bezier.emit(ref: Attachment, refObj: Part, scope: types.scope, mustEmit
 
   local useDuration = common.emitDuration > 0
 
-  task.wait(common.emitDelay)
+  clock.wait(common.emitDelay)
 
   if useDuration and not mustEmit then
     utility.forceEmit(ref, true)
@@ -95,7 +96,7 @@ function bezier.emit(ref: Attachment, refObj: Part, scope: types.scope, mustEmit
       )
     end
 
-    task.wait(common.emitDuration)
+    clock.wait(common.emitDuration)
 
     utility.awaitEmitDuration(utility.stopEmitDuration(ref))
 
@@ -394,7 +395,7 @@ function bezier.emit(ref: Attachment, refObj: Part, scope: types.scope, mustEmit
 
   Promise.all(promises):await()
 
-  task.wait(common.destroyDelay)
+  clock.wait(common.destroyDelay)
 end
 
 return bezier

@@ -1,5 +1,6 @@
 local attr = require("@mod/attributes")
 local lerp = require("@mod/lerp")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -23,7 +24,7 @@ function tweener.emit(obj: RayValue, scope: types.scope, isAttribute: boolean)
   local durationRange = attr.getRange(obj, "Duration", NumberRange.new(1, 1), NumberRange.new(0, math.huge))
 
   if emitDelay > 0 then
-    task.wait(emitDelay)
+    clock.wait(emitDelay)
   end
 
   local endValue = attr.get(obj, "_END_VALUE", nil)

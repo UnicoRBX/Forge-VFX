@@ -3,6 +3,7 @@ local CollectionService = game:GetService("CollectionService")
 
 local attr = require("@mod/attributes")
 
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -114,7 +115,7 @@ local function playSingleSound(
   scope: types.scope,
   emitDuration: number
 ): RBXScriptConnection?
-  local currentSpeed = clone.PlaybackSpeed
+  local currentSpeed = clock.read(clone)
 
   local volumeEnd = attr.get(src, "Volume_End", clone.Volume)
   local volumeStart = attr.get(src, "Volume_Start", clone.Volume)
@@ -135,8 +136,8 @@ local function playSingleSound(
     clone.Volume = volumeStart
   end
 
-  local speedEnd = attr.get(src, "Speed_End", clone.PlaybackSpeed)
-  local speedStart = attr.get(src, "Speed_Start", clone.PlaybackSpeed)
+  local speedEnd = attr.get(src, "Speed_End", currentSpeed)
+  local speedStart = attr.get(src, "Speed_Start", currentSpeed)
 
   currentSpeed = speedStart
 
@@ -150,14 +151,14 @@ local function playSingleSound(
       speedDuration,
       function(alpha, deltaTime)
         currentSpeed = utility.lerp(speedStart, speedEnd, alpha)
-        clone.PlaybackSpeed = currentSpeed
+        clock.write(clone, currentSpeed)
         return deltaTime
       end
     )
 
     table.insert(scope, speedTween)
   else
-    clone.PlaybackSpeed = speedStart
+    clock.write(clone, speedStart)
   end
 
   local rolloffEnd = attr.get(src, "RollOff_End", clone.RollOffMinDistance)
@@ -202,13 +203,13 @@ local function playSingleSound(
   end
 
   if emitDuration > 0 then
-    task.wait(emitDuration)
+    clock.wait(emitDuration)
     clone:Stop()
   else
     tween.timer(clone.TimeLength, function(deltaTime, elapsed)
-      return if clone.PlaybackSpeed > 0 or (elapsed > 0 and speedTween and speedTween.Connected)
-        then deltaTime * clone.PlaybackSpeed
-        else nil
+      local speed = clock.read(clone)
+
+      return if speed > 0 or (elapsed > 0 and speedTween and speedTween.Connected) then deltaTime * speed else nil
     end, speedTween, scope)
   end
 
@@ -264,7 +265,7 @@ function sound.emit(ref: Sound, scope: types.scope)
   local repeatCount = attr.get(ref, "RepeatCount", 1)
   local repeatInterval = attr.getRange(ref, "RepeatInterval", NumberRange.new(0, 0))
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   local promises = {}
 
@@ -296,12 +297,12 @@ function sound.emit(ref: Sound, scope: types.scope)
       )
 
       if r < repeatCount and repeatInterval.Max > 0 then
-        task.wait(rng:NextNumber(repeatInterval.Min, repeatInterval.Max))
+        clock.wait(rng:NextNumber(repeatInterval.Min, repeatInterval.Max))
       end
     end
 
     if i < emitCount and emitInterval.Max > 0 then
-      task.wait(rng:NextNumber(emitInterval.Min, emitInterval.Max))
+      clock.wait(rng:NextNumber(emitInterval.Min, emitInterval.Max))
     end
   end
 

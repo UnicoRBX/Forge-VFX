@@ -68,6 +68,35 @@ export function enable(obj: Instance): void;
 export function disable(obj: Instance): void;
 
 /**
+ * Set how fast every effect plays, including ones already playing.
+ * Delays, durations, tweens, particles, beams, trails, sounds, camera shakes
+ * and debris all follow it. Particles can't play faster than a TimeScale of 1.
+ * @param rate Seconds of effect time per real second, 0 to freeze
+ */
+export function setRate(rate: number): void;
+
+/**
+ * Get the rate set by setRate.
+ * @returns Seconds of effect time per real second
+ */
+export function getRate(): number;
+
+/**
+ * Keep an instance and its descendants that the engine runs by itself, such as
+ * an enabled ParticleEmitter, Beam, Trail or Sound, at the rate set by setRate.
+ * Emitted effects are kept at the rate already.
+ * @param obj The instance to keep at the rate (propagates to descendants)
+ */
+export function track(obj: Instance): void;
+
+/**
+ * Stop keeping an instance and its descendants at the rate, putting their
+ * speeds back as they were.
+ * @param obj The instance to release (propagates to descendants)
+ */
+export function untrack(obj: Instance): void;
+
+/**
  * Scale the timing of VFX instances by a factor.
  * Adjusts speeds, lifetimes, durations, and rates across all effect types.
  * @param factor The time scale factor (>1 speeds up, <1 slows down)

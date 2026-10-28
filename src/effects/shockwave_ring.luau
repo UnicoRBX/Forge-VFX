@@ -1,6 +1,7 @@
 local CollectionService = game:GetService("CollectionService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -83,7 +84,7 @@ function ring.emit(origin: Attachment, ref: Part, scope: types.scope)
   local tpStart = attr.get(ref, "Transparency_Start", 0)
   local tpEnd = attr.get(ref, "Transparency_End", 0)
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   local promises = {}
   local originCFrame = utility.getTransformedOriginExtents(origin)
@@ -189,7 +190,7 @@ function ring.emit(origin: Attachment, ref: Part, scope: types.scope)
     local env = scope.effects.emitNested(part, scope.depth + 1, scope)
     table.insert(promises, env.Finished)
 
-    task.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
+    clock.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
       if sizeTween then
         sizeTween:Disconnect()
       end
@@ -244,7 +245,7 @@ function ring.emit(origin: Attachment, ref: Part, scope: types.scope)
     end)
   end
 
-  task.wait(lifetime.Max + math.max(sizeEndDuration, offsetEndDuration))
+  clock.wait(lifetime.Max + math.max(sizeEndDuration, offsetEndDuration))
 
   Promise.all(promises):await()
 end

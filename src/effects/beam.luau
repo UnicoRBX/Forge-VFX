@@ -1,5 +1,6 @@
 --!nolint LocalShadow
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -62,15 +63,15 @@ function beam.emit(ref: Beam, obj: Beam, scope: types.scope, scale: number)
   local tStart, tEnd =
     attr.get(ref, "Transparency_Scale_Start", 1), attr.get(ref, "Transparency_Scale_End", legacy_tpScale)
 
-  local texSpeedStart = attr.get(ref, "Speed_Texture_Start", ref.TextureSpeed)
-  local texSpeedEnd = attr.get(ref, "Speed_Texture_End", ref.TextureSpeed)
+  local texSpeedStart = attr.get(ref, "Speed_Texture_Start", clock.read(ref))
+  local texSpeedEnd = attr.get(ref, "Speed_Texture_End", clock.read(ref))
 
   local speedStart = attr.get(ref, "Speed_Start", 1)
   local speedEnd = attr.get(ref, "Speed_End", 1)
 
-  local baseTexSpeed = obj.TextureSpeed
+  local baseTexSpeed = clock.read(obj)
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   obj.Enabled = true
 
@@ -85,7 +86,7 @@ function beam.emit(ref: Beam, obj: Beam, scope: types.scope, scale: number)
   if texSpeedStart ~= texSpeedEnd then
     tween.fromParams(attr.get(ref, "Speed_Texture_Curve", utility.default_bezier), duration, function(alpha, deltaTime)
       baseTexSpeed = utility.lerp(texSpeedStart, texSpeedEnd, alpha)
-      obj.TextureSpeed = baseTexSpeed * currentSpeed
+      clock.write(obj, baseTexSpeed * currentSpeed)
 
       return deltaTime
     end)
@@ -98,7 +99,7 @@ function beam.emit(ref: Beam, obj: Beam, scope: types.scope, scale: number)
       function(alpha, deltaTime)
         currentSpeed = utility.lerp(speedStart, speedEnd, alpha)
 
-        obj.TextureSpeed = baseTexSpeed * currentSpeed
+        clock.write(obj, baseTexSpeed * currentSpeed)
 
         return deltaTime
       end

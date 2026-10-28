@@ -1,6 +1,7 @@
 local RunService = game:GetService("RunService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -142,7 +143,7 @@ function camera_shake.emit(ref: RayValue, scope: types.scope)
   table.insert(
     scope,
     RunService.RenderStepped:Connect(function(deltaTime)
-      elapsed += deltaTime * currentSpeed
+      elapsed += clock.scale(deltaTime) * currentSpeed
     end)
   )
 
@@ -152,7 +153,7 @@ function camera_shake.emit(ref: RayValue, scope: types.scope)
     rot = vector.zero,
   }
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   table.insert(activeShakes, obj)
 
@@ -188,7 +189,7 @@ function camera_shake.emit(ref: RayValue, scope: types.scope)
   shake:Start()
 
   if sustained then
-    task.wait(emitDuration)
+    clock.wait(emitDuration)
     shake:StopSustain()
   end
 

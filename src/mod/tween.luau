@@ -1,5 +1,6 @@
 local RunService = game:GetService("RunService")
 
+local clock = require("@mod/clock")
 local logger = require("@mod/logger")
 local utility = require("@mod/utility")
 
@@ -39,6 +40,13 @@ function tween.fromParams(
   local cleanupStepper
 
   local function step(deltaTime)
+    deltaTime = clock.scale(deltaTime)
+
+    -- nothing moves while frozen, and animators divide by the step
+    if deltaTime <= 0 then
+      return
+    end
+
     -- roblox tweens apparently don't start from alpha=0
     if not startAtZero and elapsed == 0 then
       elapsed = math.clamp(elapsed + deltaTime, 0, math.max(duration, 0))
@@ -111,6 +119,12 @@ function tween.timer(
   local cleanupStepper
 
   local function step(deltaTime)
+    deltaTime = clock.scale(deltaTime)
+
+    if deltaTime <= 0 then
+      return
+    end
+
     local result = counter(deltaTime, elapsed)
 
     if

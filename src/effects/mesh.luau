@@ -2,6 +2,7 @@
 local RunService = game:GetService("RunService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -116,7 +117,7 @@ function mesh.emit(ref: Model, obj: BasePart, scope: types.scope, scale: number,
     rng:NextNumber(minInitRot.z, maxInitRot.z)
   ) * utility.DEG_TO_RAD
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   if useEmitDuration and not mustEmit then
     utility.forceEmit(ref, true)
@@ -150,7 +151,7 @@ function mesh.emit(ref: Model, obj: BasePart, scope: types.scope, scale: number,
       )
     end
 
-    task.wait(emitDuration)
+    clock.wait(emitDuration)
 
     utility.awaitEmitDuration(utility.stopEmitDuration(ref))
 
@@ -177,7 +178,7 @@ function mesh.emit(ref: Model, obj: BasePart, scope: types.scope, scale: number,
 
   local function updatePos(deltaTime: number)
     local o = sync and utility.getTransformedOriginExtents(parent) or origin
-    local add = initRot:Sign() * currentRotSpeed * deltaTime
+    local add = initRot:Sign() * currentRotSpeed * clock.scale(deltaTime)
 
     currentRot *= CFrame.fromOrientation(add.x, add.y, add.z)
 

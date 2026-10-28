@@ -2,6 +2,7 @@ local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -130,7 +131,7 @@ function debris.emit(origin: Attachment, ref: Part, scope: types.scope)
     end
   end
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   for _ = 1, count do
     local iref = #partData ~= 0 and partData[rng:NextInteger(1, #partData)]
@@ -214,6 +215,8 @@ function debris.emit(origin: Attachment, ref: Part, scope: types.scope)
         table.remove(physicsParts, index)
       end
 
+      clock.untrackBody(realPart)
+
       if part_cache then
         part_cache:free(id)
       end
@@ -237,10 +240,12 @@ function debris.emit(origin: Attachment, ref: Part, scope: types.scope)
 
     part:ApplyAngularImpulse(part.AssemblyMass * rng:NextUnitVector() * rng:NextNumber(angmag.Min, angmag.Max))
 
+    clock.trackBody(realPart)
+
     local env = scope.effects.emitNested(realPart, scope.depth + 1, scope)
     table.insert(promises, env.Finished)
 
-    task.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
+    clock.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
       local startSize = part.Size
       local startTp = part.Transparency
 
@@ -269,7 +274,7 @@ function debris.emit(origin: Attachment, ref: Part, scope: types.scope)
     end)
   end
 
-  task.wait(lifetime.Max + math.max(tpDuration, sizeDuration))
+  clock.wait(lifetime.Max + math.max(tpDuration, sizeDuration))
 
   Promise.all(promises):await()
 end

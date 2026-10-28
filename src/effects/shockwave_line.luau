@@ -1,6 +1,7 @@
 local CollectionService = game:GetService("CollectionService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local logger = require("@mod/logger")
@@ -113,7 +114,7 @@ function line.emit(origin: Attachment, ref: Part, scope: types.scope)
     direction = -Vector3.zAxis
   end
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   local promises = {}
 
@@ -287,7 +288,7 @@ function line.emit(origin: Attachment, ref: Part, scope: types.scope)
         local env = scope.effects.emitNested(realPart, scope.depth + 1, scope)
         table.insert(promises, env.Finished)
 
-        task.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
+        clock.delay(rng:NextNumber(lifetime.Min, lifetime.Max), function()
           if sizeTween then
             sizeTween:Disconnect()
           end
@@ -348,7 +349,7 @@ function line.emit(origin: Attachment, ref: Part, scope: types.scope)
     end, nil, nil, true, utility.RENDER_PRIORITY + scope.depth)
   )
 
-  task.wait(lifetime.Max + duration + math.max(sizeEndDuration, offsetEndDuration))
+  clock.wait(lifetime.Max + duration + math.max(sizeEndDuration, offsetEndDuration))
 
   Promise.all(promises):await()
 end

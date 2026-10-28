@@ -14,6 +14,7 @@ local ShockwaveLine = require("@vfx/shockwave_line")
 local ShockwaveDebris = require("@vfx/shockwave_debris")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local types = require("@root/types")
 local utility = require("@mod/utility")
 
@@ -50,6 +51,11 @@ function emitters.particle(
   sharedRefMap: { [Instance]: Instance },
   legacyScale: number
 )
+  -- one left enabled without a count isn't emitted, but still runs at the clock's rate
+  if obj:IsDescendantOf(workspace) then
+    clock.track(obj)
+  end
+
   local count = attr.get(obj, "EmitCount", utility.PLUGIN_CONTEXT and 1 or nil)
   local duration = attr.get(obj, "EmitDuration", 0, true)
 
@@ -96,9 +102,15 @@ function emitters.beam(obj: Beam, scope: types.scope, legacyScale: number)
     return
   end
 
+  if obj:IsDescendantOf(workspace) then
+    clock.track(obj)
+  end
+
   local clone = obj:Clone()
   clone.Archivable = false
   clone.Parent = workspace.Terrain
+
+  clock.track(clone)
 
   -- clone attachments for beams with scaled length
   local unscaled = NumberRange.new(1, 1)
@@ -132,6 +144,10 @@ end
 
 function emitters.trail(obj: Trail)
   obj.Enabled = true
+
+  if obj:IsDescendantOf(workspace) then
+    clock.track(obj)
+  end
 end
 
 function emitters.bezier(obj: Instance, scope: types.scope, skipEnabledCheck: boolean?)

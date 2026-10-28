@@ -2,6 +2,7 @@ local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local types = require("@root/types")
 local utility = require("@mod/utility")
 local emitters = require("@root/emitters")
@@ -83,7 +84,7 @@ function enabled_effects.init(scope: types.scope, shared_part_cache: any, effect
       if enabled then
         utility.cleanupScope(tempScope)
 
-        local last = 0
+        local last = -math.huge
         local cancelToken = { _promises = {}, _scopes = {} }
 
         utility.setEnabledCancelToken(obj, cancelToken)
@@ -98,11 +99,11 @@ function enabled_effects.init(scope: types.scope, shared_part_cache: any, effect
               return
             end
 
-            if os.clock() - last <= (1 / rate) / speed then
+            if clock.now() - last <= (1 / rate) / speed then
               return
             end
 
-            last = os.clock()
+            last = clock.now()
 
             local emitScope = {}
             emitScope.depth = 0

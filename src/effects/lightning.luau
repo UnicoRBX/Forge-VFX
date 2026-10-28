@@ -1,5 +1,6 @@
 --!nolint LocalShadow
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -301,7 +302,7 @@ function lightning.emit(ref: Attachment, refObj: Part, scope: types.scope, mustE
 
   local useDuration = common.emitDuration > 0
 
-  task.wait(common.emitDelay)
+  clock.wait(common.emitDelay)
 
   if useDuration and not mustEmit then
     utility.forceEmit(ref, true)
@@ -335,7 +336,7 @@ function lightning.emit(ref: Attachment, refObj: Part, scope: types.scope, mustE
       )
     end
 
-    task.wait(common.emitDuration)
+    clock.wait(common.emitDuration)
 
     utility.awaitEmitDuration(utility.stopEmitDuration(ref))
 

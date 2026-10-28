@@ -1,4 +1,3 @@
-local Promise = require("@pkg/Promise")
 local ObjectCache = require("@obj/ObjectCache")
 
 export type scope = { any } & {
@@ -8,8 +7,15 @@ export type scope = { any } & {
   _onCancel: { () -> () }?,
 }
 
+export type Promise = {
+  andThen: (self: Promise, successHandler: (...any) -> ...any, failureHandler: ((...any) -> ...any)?) -> Promise,
+  finally: (self: Promise, finallyHandler: (status: string) -> ...any) -> Promise,
+  await: (self: Promise) -> (boolean, ...any),
+  cancel: (self: Promise) -> (),
+}
+
 export type EmitEnv = {
-  Finished: typeof(Promise.resolve()),
+  Finished: Promise,
   Clear: (self: EmitEnv) -> (),
 }
 

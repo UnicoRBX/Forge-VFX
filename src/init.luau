@@ -87,6 +87,8 @@ local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local clock = require("@mod/clock")
+local types = require("@root/types")
 local logger = require("@mod/logger")
 local utility = require("@mod/utility")
 local attributes = require("@mod/attributes")
@@ -157,6 +159,8 @@ function api.init(params: params?)
 
   shared.vfx = api
 
+  clock.init()
+
   -- init services
   effects.init(api)
 
@@ -189,6 +193,7 @@ function api.deinit()
 
   utility.cleanupScope(api.scope)
 
+  clock.deinit()
   effects.deinit()
 
   Sound.deinit()
@@ -206,7 +211,7 @@ function api.deinit()
   end
 end
 
-local function fullEmit(scale: number, depth: number, ...: Instance)
+local function fullEmit(scale: number, depth: number, ...: Instance): types.EmitEnv
   if not api.setup then
     logger.error("not initialized")
   end
@@ -214,7 +219,7 @@ local function fullEmit(scale: number, depth: number, ...: Instance)
   return effects.emit(depth, ...)
 end
 
-function api.emit(vfxOrScale: number | Instance, ...: Instance)
+function api.emit(vfxOrScale: number | Instance, ...: Instance): types.EmitEnv
   if typeof(vfxOrScale) ~= "number" then
     return fullEmit(1, 0, vfxOrScale, ...)
   else
@@ -222,7 +227,7 @@ function api.emit(vfxOrScale: number | Instance, ...: Instance)
   end
 end
 
-function api.emitWithDepth(depth: number, ...: Instance)
+function api.emitWithDepth(depth: number, ...: Instance): types.EmitEnv
   return fullEmit(1, depth, ...)
 end
 
@@ -291,6 +296,30 @@ function api.disable(obj: Instance)
 
   for _, v in obj:GetDescendants() do
     setEnabled(v, false)
+  end
+end
+
+function api.setRate(rate: number)
+  clock.setRate(rate)
+end
+
+function api.getRate()
+  return clock.rate
+end
+
+function api.track(obj: Instance)
+  clock.track(obj)
+
+  for _, v in obj:GetDescendants() do
+    clock.track(v)
+  end
+end
+
+function api.untrack(obj: Instance)
+  clock.untrack(obj)
+
+  for _, v in obj:GetDescendants() do
+    clock.untrack(v)
   end
 end
 

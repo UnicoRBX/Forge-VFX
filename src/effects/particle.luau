@@ -1,4 +1,5 @@
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -16,7 +17,7 @@ function particle.emit(ref: ParticleEmitter, obj: ParticleEmitter, scope: types.
 
   local useDuration = duration > 0
 
-  task.wait(delay)
+  clock.wait(delay)
 
   if useDuration then
     obj.Enabled = true
@@ -24,8 +25,10 @@ function particle.emit(ref: ParticleEmitter, obj: ParticleEmitter, scope: types.
 
   local timeScaleDuration = attr.get(ref, "TimeScale_Duration", 0.1)
 
-  local timeScaleStart = attr.get(ref, "TimeScale_Start", obj.TimeScale, true)
-  local timeScaleEnd = attr.get(ref, "TimeScale_End", obj.TimeScale, true)
+  local timeScale = clock.read(obj)
+
+  local timeScaleStart = attr.get(ref, "TimeScale_Start", timeScale, true)
+  local timeScaleEnd = attr.get(ref, "TimeScale_End", timeScale, true)
 
   local speedTween
 
@@ -36,15 +39,15 @@ function particle.emit(ref: ParticleEmitter, obj: ParticleEmitter, scope: types.
       function(alpha, deltaTime)
         local speed = utility.lerp(timeScaleStart, timeScaleEnd, math.clamp(alpha, 0, 1))
 
-        obj.TimeScale = speed
+        clock.write(obj, speed)
 
         return deltaTime
       end
     )
 
     table.insert(scope, speedTween)
-  elseif timeScaleStart ~= obj.TimeScale then
-    obj.TimeScale = timeScaleStart
+  else
+    clock.write(obj, timeScaleStart)
   end
 
   utility.onCancel(scope, function()
@@ -58,14 +61,14 @@ function particle.emit(ref: ParticleEmitter, obj: ParticleEmitter, scope: types.
   obj:Emit(count)
 
   if useDuration then
-    task.wait(duration)
+    clock.wait(duration)
     obj.Enabled = false
   end
 
   tween.timer(ref.Lifetime.Max, function(deltaTime, elapsed)
-    return if ref.TimeScale > 0 or (elapsed > 0 and speedTween and speedTween.Connected)
-      then deltaTime * ref.TimeScale
-      else nil
+    local speed = clock.read(ref)
+
+    return if speed > 0 or (elapsed > 0 and speedTween and speedTween.Connected) then deltaTime * speed else nil
   end, speedTween, scope)
 end
 

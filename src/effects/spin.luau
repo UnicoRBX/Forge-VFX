@@ -1,4 +1,5 @@
 local attr = require("@mod/attributes")
+local clock = require("@mod/clock")
 local tween = require("@mod/tween")
 local types = require("@root/types")
 local utility = require("@mod/utility")
@@ -29,7 +30,7 @@ function spin.emit(ref: Model, scope: types.scope)
 
   local currentSpeed = speedStart
 
-  task.wait(emitDelay)
+  clock.wait(emitDelay)
 
   local speedTween
 
