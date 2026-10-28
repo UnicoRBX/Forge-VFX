@@ -1,7 +1,7 @@
 [package]
 version = "1.0.0"
 
-name = "unicorbx/forge-vfx"
+name = "josephh310/forge-vfx"
 description = "A fork of the VFX Forge emit module that can slow down, speed up and freeze every effect while it plays."
 
 license = "VFX-DL-1.1"

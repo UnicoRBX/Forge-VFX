@@ -25,7 +25,7 @@ The emit module is licensed under a custom source-available copyleft license whi
 #### Wally (Luau)
 
 ```sh
-ForgeVFX = "unicorbx/forge-vfx@1.0.0"
+ForgeVFX = "josephh310/forge-vfx@1.0.0"
 ```
 
 ## Usage
