@@ -1,15 +1,15 @@
 [package]
-version = "2.4.0"
+version = "1.0.0"
 
-name = "zilibobi/forge-vfx"
-description = "The official emit module from the VFX Forge plugin used to emit visual effects in-game."
+name = "unicorbx/forge-vfx"
+description = "A fork of the VFX Forge emit module that can slow down, speed up and freeze every effect while it plays."
 
 license = "VFX-DL-1.1"
 
-authors = ["zilibobi"]
+authors = ["zilibobi", "BreakLoop"]
 
 registry = "https://github.com/UpliftGames/wally-index"
-repository = "https://github.com/zilibobi/forge-vfx"
+repository = "https://github.com/UnicoRBX/Forge-VFX"
 
 realm = "shared"
 

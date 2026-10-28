@@ -7,30 +7,26 @@
 
 # Emit Module
 
-The is the official repository for the emit module provided by the <a href="https://devforum.roblox.com/t/3867553">VFX Forge</a> Roblox plugin.
+This is a fork of the emit module provided by the <a href="https://devforum.roblox.com/t/3867553">VFX Forge</a> Roblox plugin, made from [zilibobi/forge-vfx](https://github.com/zilibobi/forge-vfx) after 2.4.0. It adds a playback rate, so every effect can be slowed down, sped up or frozen while it plays.
+
+```luau
+vfx.setRate(2) -- every effect, including ones already playing, runs twice as fast
+vfx.setRate(0) -- every effect freezes where it is
+vfx.track(workspace.Map) -- enabled emitters, beams, trails and sounds the engine runs by itself follow the rate too
+```
+
+The rate covers delays, durations, tweens, flipbooks, particles, beams, trails, sounds, camera shakes and debris. Particles can't run faster than a TimeScale of 1, so an emitter authored at a TimeScale of 0.25 can be sped up to 4x. Debris keeps its path at any rate by scaling its velocity and the gravity on it.
 
 ## License
-The emit module is licensed under a custom source-available copyleft license which **<mark>only allows usage within Roblox games</mark>**. That said, feel free to contribute and report bugs.
+The emit module is licensed under a custom source-available copyleft license which **<mark>only allows usage within Roblox games</mark>**. This fork is under the same license.
 
 ## Installation
 
 #### Wally (Luau)
 
 ```sh
-ForgeVFX = "zilibobi/forge-vfx@2.4.0"
+ForgeVFX = "unicorbx/forge-vfx@1.0.0"
 ```
-
-#### npm (TypeScript)
-
-```sh
-npm i @zilibobi/forge-vfx
-```
-
-#### Manual
-
-Check the [releases page](https://github.com/zilibobi/forge-vfx/releases/latest) for prebuilt .rbxm files.
-
-The model is named `forge-vfx`, matching the package name so package managers resolve it. A hyphen cannot be indexed with a dot, so either rename it after inserting or write `ReplicatedStorage["forge-vfx"]`. The Wally and npm paths are unaffected: both expose it under the name you import it as.
 
 ## Usage
 
