@@ -68,11 +68,18 @@ jobs:
             --title "${CURRENT_TAG}" \
             --notes-file CHANGELOG.md
 
+      # releases without a WALLY_AUTH_TOKEN secret are published to wally by hand
       - name: Authenticate with Wally
-        run: wally login --token "${{ secrets.WALLY_AUTH_TOKEN }}"
+        if: env.WALLY_AUTH_TOKEN != ''
+        env:
+          WALLY_AUTH_TOKEN: ${{ secrets.WALLY_AUTH_TOKEN }}
+        run: wally login --token "$WALLY_AUTH_TOKEN"
 
       - name: Publish to Wally
+        if: env.WALLY_AUTH_TOKEN != ''
         continue-on-error: true
+        env:
+          WALLY_AUTH_TOKEN: ${{ secrets.WALLY_AUTH_TOKEN }}
         run: |
           cd .build
           wally publish
