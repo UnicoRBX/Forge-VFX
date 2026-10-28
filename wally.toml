@@ -1,12 +1,12 @@
 [package]
-version = "1.0.0"
+version = "1.0.1"
 
 name = "josephh310/forge-vfx"
 description = "A fork of the VFX Forge emit module that can slow down, speed up and freeze every effect while it plays."
 
 license = "VFX-DL-1.1"
 
-authors = ["zilibobi", "BreakLoop"]
+authors = ["zilibobi", "josephh310"]
 
 registry = "https://github.com/UpliftGames/wally-index"
 repository = "https://github.com/UnicoRBX/Forge-VFX"
